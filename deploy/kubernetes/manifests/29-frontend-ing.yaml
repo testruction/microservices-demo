@@ -12,10 +12,10 @@ spec:
   ingressClassName: contour
   tls:
     - hosts:
-        - stock-shop.testruction.io
+        - sock-shop.testruction.io
       secretName: sock-shop-general-cert
   rules:
-    - host: stock-shop.testruction.io
+    - host: sock-shop.testruction.io
       http:
         paths:
           - path: /

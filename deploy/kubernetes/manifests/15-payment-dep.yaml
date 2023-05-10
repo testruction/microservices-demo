@@ -19,10 +19,6 @@ spec:
       containers:
       - name: payment
         image: weaveworksdemos/payment:0.4.3
-        resources:
-          limits:
-            cpu: 200m
-            memory: 200Mi
         ports:
         - containerPort: 80
         securityContext:

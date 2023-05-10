@@ -22,10 +22,6 @@ spec:
         command: ["/app"]
         args:
         - -port=80
-        resources:
-          limits:
-            cpu: 200m
-            memory: 200Mi
         ports:
         - containerPort: 80
         securityContext:

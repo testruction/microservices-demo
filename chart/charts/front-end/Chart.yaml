@@ -1,6 +1,6 @@
 apiVersion: v2
-name: sock-shop
-description: Sock Shop simulates the user-facing part of an e-commerce website that sells socks. It is intended to aid the demonstration and testing of microservice and cloud native technologies.
+name: front-end
+description: A Helm chart for Kubernetes
 
 # A chart can be either an 'application' or a 'library' chart.
 #
@@ -21,20 +21,4 @@ version: 0.1.0
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-appVersion: "1.0.0"
-
-home: https://microservices-demo.github.io
-
-dependencies:
-  - name: "carts-db"
-    repository: "./charts/carts-db"
-    condition: cartsdb.create
-    version: "0.1.0"
-  - name: "carts"
-    repository: "./charts/carts"
-    condition: carts.create
-    version: "0.1.0"
-  - name: "front-end"
-    repository: "./charts/front-end"
-    condition: carts.create
-    version: "0.1.0"
+appVersion: "1.16.0"

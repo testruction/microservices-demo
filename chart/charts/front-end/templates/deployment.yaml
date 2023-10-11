@@ -1,78 +1,62 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "carts.fullname" . }}
+  name: {{ include "front-end.fullname" . }}
   labels:
-    {{- include "carts.labels" . | nindent 4 }}
+    {{- include "front-end.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "carts.selectorLabels" . | nindent 6 }}
+      {{- include "front-end.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
-        {{- if .Values.istio.enabled }}
-          sidecar.istio.io/rewriteAppHTTPProbers: "true"
-        {{- end }}
+      {{- end }}
+      {{- if .Values.istio.enabled }}
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
       {{- end }}
       labels:
-        {{- include "carts.selectorLabels" . | nindent 8 }}
+        {{- include "front-end.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "carts.serviceAccountName" . }}
+      serviceAccountName: {{ include "front-end.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
-          command:
-            - /usr/local/bin/java.sh
-            - -jar
-            - ./app.jar
-            - --port=80
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            {{- if .Values.zipkin.enabled }}
-            - name: ZIPKIN
-              value: {{ .Values.zipkin.url }}
-            {{- end }}
-            - name: JAVA_OPTS
-              value: {{ .Values.java.options }}
+          - name: SESSION_REDIS
+            value: "true"
           ports:
             - name: http
-              containerPort: 80
+              containerPort: 8079
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /health
+              path: /
               port: http
-            initialDelaySeconds: 420
+            initialDelaySeconds: 300
             periodSeconds: 3
           readinessProbe:
             httpGet:
-              path: /health
+              path: /
               port: http
-            initialDelaySeconds: 360
+            initialDelaySeconds: 30
             periodSeconds: 3
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          volumeMounts:
-            - mountPath: /tmp
-              name: tmp-volume
-      volumes:
-        - name: tmp-volume
-          emptyDir:
-            medium: Memory
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

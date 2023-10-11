@@ -36,5 +36,5 @@ dependencies:
     version: "0.1.0"
   - name: "front-end"
     repository: "./charts/front-end"
-    condition: carts.create
+    condition: frontend.create
     version: "0.1.0"
